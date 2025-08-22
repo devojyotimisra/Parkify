@@ -1,0 +1,148 @@
+{% extends "components/base.html" %}
+
+{% block title %}Parkify - Search Results{% endblock %}
+
+{% block content %}
+
+{% include 'components/navbar.html' %}
+
+{% include 'components/alerts.html' %}
+
+<main class="container py-4">
+
+    <h1 class="mb-4">Search Results</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('admin_search.search') }}" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label for="query" class="form-label">Search Query</label>
+                    <input type="text" class="form-control" id="query" name="query" placeholder="Enter search query"
+                        value="{{ query }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="type" class="form-label">Search Type</label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="lot" {% if type=='lot' %}selected{% endif %}>Parking Lot</option>
+                        <option value="user" {% if type=='user' %}selected{% endif %}>User</option>
+                        <option value="vehicle" {% if type=='vehicle' %}selected{% endif %}>Vehicle Number
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Results for "{{ query }}"</h5>
+        </div>
+        <div class="card-body">
+            {% if results %}
+            {% if type == 'lot' %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Lot ID</th>
+                            <th>Location Name</th>
+                            <th>Address</th>
+                            <th>Price/Hour</th>
+                            <th>Total Spots</th>
+                            <th>Available</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lot in results %}
+                        <tr>
+                            <td>{{ lot.id }}</td>
+                            <td>{{ lot.prime_location_name }}</td>
+                            <td>{{ lot.address }}</td>
+                            <td>₹{{ "%.2f"|format(lot.price) }}</td>
+                            <td>{{ lot.maximum_number_of_spots }}</td>
+                            <td>{{ lot.available_spots_count }}</td>
+                            <td>
+                                <a href="{{ url_for('admin_view_spots.view_spots', lot_id=lot.id) }}"
+                                    class="btn btn-sm btn-primary">View Spots</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% elif type == 'user' %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>SL</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Pin Code</th>
+                            <th>Active</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in results %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.address }}</td>
+                            <td>{{ user.pincode }}</td>
+                            <td>
+                                <span class="badge {{ 'bg-success' if user.active else 'bg-danger' }}">
+                                    {{ 'Active' if user.active else 'Inactive' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% elif type == 'vehicle' %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Reservation ID</th>
+                            <th>Vehicle Number</th>
+                            <th>User</th>
+                            <th>Spot</th>
+                            <th>Parking Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation, user, spot in results %}
+                        <tr>
+                            <td>{{ reservation.id }}</td>
+                            <td>{{ reservation.vehicle_number }}</td>
+                            <td>{{ user.name }}</td>
+                            <td>Spot #{{ spot.id }}</td>
+                            <td>{{ reservation.parking_timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <span
+                                    class="badge {{ 'bg-danger' if not reservation.leaving_timestamp else 'bg-success' }}">
+                                    {{ 'Active' if not reservation.leaving_timestamp else 'Completed' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            {% else %}
+            <p class="text-center mb-0">No results found for your query.</p>
+            {% endif %}
+        </div>
+    </div>
+</main>
+
+{% endblock %}

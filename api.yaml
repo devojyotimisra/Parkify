@@ -1,0 +1,310 @@
+info:
+  title: Parkify Smart Parking System (HTML Endpoints)
+  description: HTML-rendering endpoints for the Parkify smart parking management system. Auth is cookie/session based via Flask-Security. Role protection is enforced at the route level (admin/user). Responses are primarily server-rendered HTML with redirects and flash messages.
+
+servers:
+    url: http://localhost:5000
+    description: Local development server
+
+tags:
+    name: General
+    description: Authentication and homepage routes
+
+    name: Admin
+    description: Admin routes for lot, user, and spot management
+    
+    name: User
+    description: User routes for booking, searching, and history
+
+parameters:
+  lot_id:
+    name: lot_id
+    required: true
+    type: integer
+    description: Parking lot ID
+
+  spot_id:
+    name: spot_id
+    required: true
+    type: integer
+    description: Parking spot ID
+
+  reservation_id:
+    name: reservation_id
+    required: true
+    type: integer
+    description: Reservation ID
+
+  adminSearch_query:
+    name: query
+    required: false
+    type: string
+    description: Search string
+
+  adminSearch_type:
+    name: type
+    required: false
+    type: string
+    values: [lot, user, vehicle]
+    default: lot
+    description: What to search (parking lots, users, or vehicles)
+
+  userSearch_location:
+    name: location
+    in: query
+    required: false
+    type: string
+    description: Location or address substring to search for
+
+responses:
+  HtmlOK:
+    description: HTML page rendered successfully
+    statusCode: 200
+
+  RedirectFound:
+    description: Redirect (commonly after successful login/create/update/delete)
+    statusCode: 302
+
+  Unauthorized:
+    description: Not authenticated
+    statusCode: 401
+
+  Forbidden:
+    description: Authenticated but role not permitted
+    statusCode: 403
+
+  NotFound:
+    description: Resource not found
+    statusCode: 404
+
+  ValidationError:
+    description: Input validation failed (flash message with category "danger")
+    statusCode: 400
+
+paths:
+  /:
+    get:
+      tags: [General]
+      summary: Homepage
+      responses:
+        - 200
+        - 302
+
+  /login:
+    get:
+      tags: [General]
+      summary: Show login page
+      responses:
+        - 200
+    post:
+      tags: [General]
+      summary: Process login
+      responses:
+        - 302
+        - 200
+
+  /logout:
+    get:
+      tags: [General]
+      summary: Log out the user
+      responses:
+        - 302
+
+  /signup:
+    get:
+      tags: [General]
+      summary: Show signup page
+      responses:
+        - 200
+    post:
+      tags: [General]
+      summary: Process signup
+      responses:
+        - 302
+        - 200
+
+  /dash/admin:
+    get:
+      tags: [Admin]
+      summary: Admin dashboard showing all parking lots
+      responses:
+        - 200
+        - 401
+        - 403
+
+  /dash/admin/add_lot:
+    get:
+      tags: [Admin]
+      summary: Show form to add a parking lot
+      responses:
+        - 200
+    post:
+      tags: [Admin]
+      summary: Process add parking lot
+      responses:
+        - 302
+        - 200
+
+  /dash/admin/edit_lot/{lot_id}:
+    parameters: lot_id
+    get:
+      tags: [Admin]
+      summary: Show edit lot form
+      responses:
+        - 200
+        - 404
+    post:
+      tags: [Admin]
+      summary: Process edit parking lot
+      responses:
+        - 302
+        - 200
+        - 404
+
+  /dash/admin/delete_lot/{lot_id}:
+    parameters: lot_id
+    post:
+      tags: [Admin]
+      summary: Delete a parking lot
+      responses:
+        - 302
+        - 404
+
+  /dash/admin/view_spots/{lot_id}:
+    parameters: lot_id
+    get:
+      tags: [Admin]
+      summary: View parking spots of a lot
+      responses:
+        - 200
+        - 404
+
+  /dash/admin/spot_details/{spot_id}:
+    parameters: spot_id
+    get:
+      tags: [Admin]
+      summary: View details of a specific spot
+      responses:
+        - 200
+        - 404
+
+  /dash/admin/users:
+    get:
+      tags: [Admin]
+      summary: View list of all users
+      responses:
+        - 200
+
+  /dash/admin/search:
+    get:
+      tags: [Admin]
+      summary: Search lots, users, or vehicles
+      parameters:
+        - Search_query
+        - Search_type
+      responses:
+        - 200
+
+  /dash/admin/history:
+    get:
+      tags: [Admin]
+      summary: View reservation history and analytics
+      responses:
+        - 200
+
+  /dash/admin/profile:
+    get:
+      tags: [Admin]
+      summary: View admin profile
+      responses:
+        - 200
+
+  /dash/admin/edit_profile:
+    get:
+      tags: [Admin]
+      summary: Show form to edit admin profile
+      responses:
+        - 200
+    post:
+      tags: [Admin]
+      summary: Process edit admin profile
+      responses:
+        - 302
+        - 200
+
+  /dash/user:
+    get:
+      tags: [User]
+      summary: User dashboard
+      responses:
+        - 200
+
+  /dash/user/select_slot/{lot_id}:
+    parameters: lot_id
+    get:
+      tags: [User]
+      summary: Select a parking spot
+      responses:
+        - 200
+        - 404
+
+  /dash/user/book_slot/{lot_id}:
+    parameters: lot_id
+    post:
+      tags: [User]
+      summary: Book a parking spot
+      responses:
+        - 302
+        - 200
+        - 404
+
+  /dash/user/release_slot/{reservation_id}:
+    parameters: reservation_id
+    get:
+      tags: [User]
+      summary: Show confirmation/release page for a booked spot
+      responses:
+        - 200
+        - 404
+    post:
+      tags: [User]
+      summary: Release a booked spot
+      responses:
+        - 302
+        - 404
+        - 403
+
+  /dash/user/search:
+    get:
+      tags: [User]
+      summary: Search parking spots
+      parameters: userSearch_location
+      responses:
+        - 200
+
+  /dash/user/history:
+    get:
+      tags: [User]
+      summary: View user's parking history
+      responses:
+        - 200
+
+  /dash/user/profile:
+    get:
+      tags: [User]
+      summary: View user profile
+      responses:
+        - 200
+
+  /dash/user/edit_profile:
+    get:
+      tags: [User]
+      summary: Display form to edit profile
+      responses:
+        - 200
+    post:
+      tags: [User]
+      summary: Process edit user profile
+      responses:
+        - 302
+        - 200

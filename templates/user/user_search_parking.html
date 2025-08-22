@@ -1,0 +1,76 @@
+{% extends "components/base.html" %}
+
+{% block title %}Parkify - Search Parking{%endblock %}
+
+{% block content %}
+
+{% include 'components/navbar.html' %}
+
+{%include 'components/alerts.html' %}
+
+<main class="container py-4">
+  <h1 class="mb-4">Search Available Parking Spaces</h1>
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="GET" action="{{ url_for('user_search.search') }}" class="row g-3 align-items-end">
+        <div class="col-md-9">
+          <label for="location" class="form-label">Location</label>
+          <input type="text" class="form-control" id="location" name="location"
+            placeholder="Enter location name or address" value="{{ location }}" />
+        </div>
+        <div class="col-md-3">
+          <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Parking Lots & Results</h5>
+    </div>
+    <div class="card-body p-0">
+      {% if available_lots %}
+      <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Location</th>
+              <th>Address</th>
+              <th>Price/Hour</th>
+              <th>Availability</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lot in available_lots %}
+            <tr>
+              <td>{{ lot.id }}</td>
+              <td>{{ lot.prime_location_name }}</td>
+              <td>{{ lot.address }}</td>
+              <td>₹{{ "%.2f"|format(lot.price) }}</td>
+              <td>
+                {{ lot.available_spots_count }}/{{ lot.maximum_number_of_spots }}
+              </td>
+              <td>
+                <a href="{{ url_for('user_select_slot.select_slot', lot_id=lot.id) }}"
+                  class="btn btn-sm btn-primary">Book</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="p-4 text-center">
+        <p class="mb-0">
+          No parking lots found matching your criteria or with available spots.
+        </p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+{% endblock %}

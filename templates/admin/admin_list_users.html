@@ -1,0 +1,73 @@
+{% extends "components/base.html" %} 
+
+{% block title %}Parkify - User List{%endblock %} 
+
+{% block content %} 
+
+{% include 'components/navbar.html' %} 
+
+{%include 'components/alerts.html' %}
+
+<main class="container py-4">
+  <h1 class="mb-4">Registered Users</h1>
+
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">User List</h5>
+    </div>
+    <div class="card-body p-0">
+      {% if users %}
+      <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+          <thead>
+            <tr>
+              <th>SL</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Address</th>
+              <th>Pin Code</th>
+              <th>Active</th>
+              <th>Vehicle Number</th>
+              <th>Current Parking</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.address }}</td>
+              <td>{{ user.pincode }}</td>
+              <td>
+                <span class="badge {{ 'bg-success' if user.active else 'bg-danger' }}">
+                  {{ 'Active' if user.active else 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ user.vehicle_number or 'N/A' }}</td>
+              <td>
+                {% set active_res = user.reservations|selectattr('leaving_timestamp', 'none')|first%} 
+                {% if active_res %}
+                <a href="{{ url_for('admin_view_spot_details.spot_details', spot_id=active_res.spot_id) }}"
+                  class="btn btn-sm btn-info">
+                  View Spot
+                </a>
+                {% else %}
+                <span class="badge bg-secondary">No Active Parking</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="p-4 text-center">
+        <p class="mb-0">No users registered yet.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+{% endblock %}

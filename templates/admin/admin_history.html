@@ -1,0 +1,102 @@
+{% extends "components/base.html" %}
+
+{% block title %}Parkify - History{%endblock %}
+
+{% block content %}
+
+{% include 'components/navbar.html' %}
+
+{%include 'components/alerts.html' %}
+
+<main class="container py-4">
+  <h1 class="mb-4">Parking History & Analytics</h1>
+
+  <div class="row mb-4" id="chart-data" data-chart='{{ chart_data | safe }}''>
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Revenue by Parking Lot</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Occupancy by Parking Lot</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="occupancyChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Parking History</h5>
+    </div>
+    <div class="card-body p-0">
+      {% if reservations %}
+      <div class="table-responsive">
+        <table class="table table-hover table-striped mb-0">
+          <thead>
+            <tr>
+              <th>Spot ID</th>
+              <th>Email</th>
+              <th>Vehicle Number</th>
+              <th>Parking Time</th>
+              <th>Leaving Time</th>
+              <th>Duration (hours)</th>
+              <th>Total Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for res in reservations %}
+            <tr>
+              <td>{{ res.spot_id }}</td>
+              <td>{{ res.user.email }}</td>
+              <td>{{ res.vehicle_number }}</td>
+              <td>{{ res.parking_timestamp.strftime(' %Y-%m-%d %H:%M') }}</td>
+              <td>
+                {% if res.leaving_timestamp %} 
+                  {{res.leaving_timestamp.strftime('%Y-%m-%d %H:%M') }} 
+                {% else %}
+                  <span class="badge bg-warning">Active</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if res.duration_hours %} 
+                  {{ "%.2f"|format(res.duration_hours)}} 
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td>
+                {% if res.total_cost %} 
+                  ₹{{ "%.2f"|format(res.total_cost) }} 
+                {%else %}
+                  -
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="p-4 text-center">
+        <p class="mb-0">No parking history records found.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+{% block additional_js %}
+<script src="{{url_for('static', filename='js/admin_chart.js')}}"></script>
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,14 @@
+[project]
+name = "mad-1"
+version = "0.1.0"
+description = "Book your parking spot now!"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dotenv>=0.9.9",
+    "flask>=3.1.0",
+    "flask-cors>=5.0.1",
+    "flask-security-too>=5.6.1",
+    "flask-sqlalchemy>=3.1.1",
+    "setuptools==80.3.0",
+]

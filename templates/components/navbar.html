@@ -1,0 +1,59 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand"
+      href="{{ url_for('home.index') if not current_user.is_authenticated else (url_for('admin_dash.admin_dashboard') if current_user.has_role('admin') else url_for('user_dash.user_dashboard')) }}">
+      <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="Logo" width="30" height="30"
+        class="d-inline-block align-text-top me-2" />
+      Parkify
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        {% if current_user.is_authenticated %} {% if
+        current_user.has_role('admin') %}
+        <li class="nav-item">
+          <a href="{{ url_for('admin_dash.admin_dashboard') }}" class="btn btn-outline-success m-1">Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('admin_view_users.users') }}" class="btn btn-outline-success m-1">Users</a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('admin_search.search') }}" class="btn btn-outline-success m-1">Search</a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('admin_history.history') }}" class="btn btn-outline-success m-1">History</a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('admin_profile.profile') }}" class="btn btn-outline-success m-1">Profile</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a href="{{ url_for('user_dash.user_dashboard') }}" class="btn btn-outline-success m-1">Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('user_search.search') }}" class="btn btn-outline-success m-1">Search</a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('user_history.history') }}" class="btn btn-outline-success m-1">History</a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('user_profile.profile') }}" class="btn btn-outline-success m-1">Profile</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a href="{{ url_for('logout.logout') }}" class="btn btn-outline-danger m-1">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a href="{{ url_for('login.login') }}" class="btn btn-outline-success m-1">Login</a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('signup.signup') }}" class="btn btn-outline-success m-1">Sign Up</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

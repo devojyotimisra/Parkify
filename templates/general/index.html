@@ -1,0 +1,16 @@
+{% extends '/components/base.html' %}
+
+{% block title %}Parkify{% endblock %}
+
+{%block content %}
+
+{% include '/components/navbar.html' %}
+
+{% include '/components/alerts.html' %}
+
+<div class="flex-grow-1 d-flex flex-column justify-content-center align-items-center p-3 text-center">
+  <h1 class="display-4 display-lg-3 fw-bold mb-3">Parkify</h1>
+  <p class="lead fs-3">Book your parking spot now!</p>
+</div>
+
+{% endblock %}

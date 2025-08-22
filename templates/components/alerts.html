@@ -1,0 +1,14 @@
+<div class="position-fixed top-3 end-0 p-3 mt-1" style="z-index: 9999">
+  {% with messages = get_flashed_messages(with_categories=true) %} 
+    {% if messages %} 
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show mt-5 p-2 d-flex align-items-center" role="alert" style="min-width: 125px; max-width: 500px">
+        <span class="small flex-grow-1 pe-2">{{ message | safe }}</span>
+        <button type="button" class="btn py-0" aria-label="Close" data-bs-dismiss="alert">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      {% endfor %} 
+    {% endif %} 
+  {% endwith %}
+</div>

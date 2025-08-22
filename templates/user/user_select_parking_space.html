@@ -1,0 +1,72 @@
+{% extends "components/base.html" %}
+
+{% block title %}Parkify - Select ParkingSpace{% endblock %}
+
+{% block additional_styling %}
+
+<link href="{{ url_for('static', filename='css/select_parking_space.css') }}" rel="stylesheet" />{% endblock %}
+
+{% block content %}
+
+{% include 'components/navbar.html' %}
+
+{%include 'components/alerts.html' %}
+
+<main class="container my-auto py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <h2 class="card-title text-center mb-4">Select Parking Space</h2>
+
+          <div class="text-center my-4">
+            <div class="d-flex justify-content-center gap-3">
+              <span class="badge bg-success">Available</span>
+              <span class="badge bg-danger">Occupied</span>
+            </div>
+          </div>
+
+          <form method="POST" action="{{ url_for('user_book_slot.book_slot', lot_id=lot.id) }}" id="parkingForm">
+            <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+              {% for spot in spots %}
+              <div
+                class="parking-space d-flex justify-content-center align-items-center border rounded fw-bold text-white {{ 'bg-success' if spot.status == 'A' else 'bg-danger' }}"
+                style="width: 70px; height: 70px; cursor: {{ 'pointer' if spot.status == 'A' else 'not-allowed' }}"
+                data-spot-id="{{ spot.id }}" data-spot-status="{{ spot.status }}">
+                {{ loop.index }}
+              </div>
+              {% endfor %}
+            </div>
+
+            <input type="hidden" name="spot_id" id="selected_spot_id" />
+
+            <div class="mb-3">
+              <label for="vehicle_number" class="form-label">Your Default Vehicle Number</label>
+              <input type="text" class="form-control" id="vehicle_number" name="vehicle_number"
+                placeholder="Enter vehicle number" value="{{ current_user.vehicle_number or '' }}" />
+            </div>
+
+            <div class="mb-3">
+              <label for="parking_time" class="form-label">Parking Time</label>
+              <input type="text" class="form-control" id="parking_time" value="{{ now.strftime('%Y-%m-%d %H:%M') }}"
+                readonly />
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-success" id="bookBtn" disabled>
+                Book Selected Space
+              </button>
+              <a href="{{ url_for('user_search.search') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='js/select_spot.js') }}"></script>
+{% endblock %}
+
+{% endblock %}

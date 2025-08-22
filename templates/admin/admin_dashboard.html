@@ -1,0 +1,70 @@
+{% extends "components/base.html" %}
+
+{% block title %}Parkify - AdminDashboard{% endblock %}
+
+{% block content %}
+
+{% include 'components/navbar.html'%}
+
+{% include 'components/alerts.html' %}
+
+<main class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Welcome {{ user.name | safe }} !!!</h1>
+    <a href="{{ url_for('admin_add_lot.add_lot') }}" class="btn btn-success">+ Add Lot</a>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for lot in parking_lots %}
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-header bg-primary text-white">
+          {{ lot.prime_location_name }}
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">
+            Price: ₹{{ "%.2f"|format(lot.price) }} per hour
+          </h5>
+          <p class="card-text">
+            Address: {{ lot.address }}<br />
+            Pin Code: {{ lot.pin_code }}
+          </p>
+
+          <div class="mb-3">
+            <strong>Spots Status:</strong>
+            <div class="d-flex flex-wrap mt-2">
+              {% for spot in lot.parking_spots %}
+              <div class="rounded border border-primary bg-{{ 'success' if spot.status == 'A' else 'danger' }}"
+                style="width: 30px; height: 30px; margin: 2px"
+                title="Spot #{{ spot.id }} - {{ 'Available' if spot.status == 'A' else 'Occupied' }}"></div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <div>
+              Total spots:
+              <span class="badge bg-primary">{{ lot.maximum_number_of_spots }}</span>
+            </div>
+            <div>
+              Available:
+              <span class="badge bg-success">{{ lot.available_spots_count }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between">
+          <a href="{{ url_for('admin_view_spots.view_spots', lot_id=lot.id) }}" class="btn btn-primary">View Details</a>
+          <a href="{{ url_for('admin_edit_lot.edit_lot', lot_id=lot.id) }}" class="btn btn-warning">Edit</a>
+          <form action="{{ url_for('admin_delete_lot.delete_lot', lot_id=lot.id) }}" method="POST"
+            onsubmit="return confirm('Are you sure you want to delete this parking lot?')">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</main>
+
+{% endblock %}

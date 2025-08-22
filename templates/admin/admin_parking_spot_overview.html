@@ -1,0 +1,98 @@
+{% extends "components/base.html" %}
+
+{% block title %}Parkify - Parking Spot Details{% endblock %}
+
+{% block content %}
+
+{% include 'components/navbar.html' %}
+
+{% include 'components/alerts.html' %}
+
+<main class="container py-4">
+  <h2 class="mb-4">Parking Lot: {{ lot.prime_location_name }}</h2>
+
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Lot Information</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Address:</strong> {{ lot.address }}</p>
+          <p><strong>Pin Code:</strong> {{ lot.pin_code }}</p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Price per Hour:</strong> ₹{{ "%.2f"|format(lot.price) }}</p>
+          <p><strong>Total Spots:</strong> {{ lot.maximum_number_of_spots }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Current Parking Lot Situation</h5>
+    </div>
+    <div class="card-body">
+      <div class="d-flex flex-wrap">
+        {% for detail in spot_details %}
+        <div
+          class="rounded d-flex align-items-center justify-content-center bg-{{ 'success' if detail.status == 'Available' else 'danger' }} text-white fw-bold"
+          style="width: 40px; height: 40px; margin: 3px" title="Spot #{{ detail.id }} - {{ detail.status }}">
+          {{ loop.index }}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="mt-3">
+        <span class="badge bg-success p-2 me-2">Available</span>
+        <span class="badge bg-danger p-2">Occupied</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Parking Spots Details</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead>
+            <tr>
+              <th>Spot ID</th>
+              <th>Status</th>
+              <th>User</th>
+              <th>Vehicle Number</th>
+              <th>Parking Time</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for detail in spot_details %}
+            <tr>
+              <td>{{ detail.id }}</td>
+              <td>
+                <span class="badge {{ 'bg-success' if detail.status == 'Available' else 'bg-danger' }}">
+                  {{ detail.status }}
+                </span>
+              </td>
+              <td>{{ detail.user.name if detail.user else '-' }}</td>
+              <td>{{ detail.reservation.vehicle_number if detail.reservation else '-' }}</td>
+              <td>{{ detail.reservation.parking_timestamp.strftime('%Y-%m-%d %H:%M') if detail.reservation else '-' }}
+              </td>
+              <td>
+                {% if detail.status == 'Occupied' %}
+                <a href="{{ url_for('admin_view_spot_details.spot_details', spot_id=detail.id) }}" class="btn btn-sm btn-info">View
+                  Details</a>
+                {% else %} - {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+{% endblock %}
